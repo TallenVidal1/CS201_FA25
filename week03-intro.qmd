@@ -111,11 +111,21 @@ View(mtcars) # opens up the datafram for viewing
 head(mtcars) # displays the top few lines of the dataframe
 summary(mtcars) # displays a summary of all variables
 ?mtcars # will open up documentation in your Help tab. works for packages, functions, too!
+
+## Transforming the data, creating a model column
+
+mtcars <-mtcars %>%
+  rownames_to_column("model")
+
+tail(mtcars)
 ```
 
 -   How many rows and columns are in the dataframe?
+-   32 rows and 12 columns
 -   What variables look interesting?
+-   qsec (The time it takes to travel a quarter of a mile), vs, drat,
 -   How might you view the last few rows of the dataframe with a single function?
+-   
 
 ------------------------------------------------------------------------
 
@@ -130,12 +140,13 @@ mean(mtcars$mpg) # the $ helps you select a specific column of interest
 -   Can you find the mean of another variable?
 
 ```{r}
-
+mean(mtcars$hp)
 ```
 
 -   Can you find the median?
 
 ```{r}
+median(mtcars$mpg)
 
 ```
 
@@ -156,10 +167,28 @@ plot(mtcars$wt, mtcars$mpg,
 
 ## Exit Ticket
 
-Create a scatterplot of two variables of your choice (but not `mpg` vs. `wt`). Feel free to try a `ggplot2` version if you have some R experience!
+Create a scatterplot, histogram, and boxplot of two variables of your choice (but not `mpg` vs. `wt`). Feel free to try a `ggplot2` version if you have some R experience!
 
 ```{r}
+plot(mtcars$mpg, mtcars$hp,
+     xlab = "Miles per Gallon", ylab = "Horsepower",
+     main = "MPG vs Horsepower");
 
+```
+
+```{r}
+hist(mtcars$qsec,
+     xlab= "1/4 Time", ylab = "Frequency",
+     main = "Histogram of 1/4 Quarter Mile Time",
+     col = blues9)
+```
+
+```{r}
+boxplot(mtcars$mpg, mtcars$qsec,
+        xlab = "MPG", ylab = "1/4 Mile Time",
+        Main = "MPG vs 1/4 Time")
+
+#colors()
 ```
 
 Save, stage, commit, and push to GitHub!!
