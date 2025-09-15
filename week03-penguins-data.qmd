@@ -248,10 +248,17 @@ Cool! Let's add species to this plot. What about island?
 
 -   Part 1
 
-    -   In the code chunk below create a **histogram** with `culmen_depth_mm` on the x axis and `color` by `species` using the dataframe *penguins_data*. Give the plot the theme: `theme_bw()`. Assign a color palette with `scale_fill_viridis_d()`. Give the plot a title, subtitile and custom x and y axis titles.
+    -   In the code chunk below create a **histogram** with `culmen_depth_mm` on the x axis and `color` by `species` using the dataframe *penguins_data*. Give the plot the theme: `theme_bw()`. Assign a color palette with `scale_fill_viridis_d()`. Give the plot a title, subtitle and custom x and y axis titles.
 
 ```{r, message=FALSE}
- 
+ ggplot(data = penguins_data, aes(x = culmen_depth_mm, fill = species)) +
+  geom_histogram() +
+  theme_bw() + 
+  scale_fill_viridis_d() + # try adding option = "A", "C", "E", etc. These also have names! See documentation.
+  labs(title = "Palmer Penguins, Distribution of Culmen Depth",
+       subtitle = "3 penguin species observed on three islands in the Palmer Archipelago, Antarctica",
+       x = "Culmen Depth (mm)",
+       y = "Number of Penguins")
 ```
 
 -   Part 2
@@ -259,7 +266,12 @@ Cool! Let's add species to this plot. What about island?
     -   In the code chunk below create a **scatterplot** with `culmen_depth_mm` on the x axis, `body_mass_g` on the y axis, and `color` by `species` using the dataframe *penguins_data*. Give the plot the theme: `theme_bw()`. Assign a color palette with `scale_fill_viridis_d(option = "mako")`. Give the plot a title, subtitile and custom x and y axis titles.
 
 ```{r, message=FALSE}
-
+ggplot(data = penguins_data, aes(x = culmen_depth_mm, y = body_mass_g, color=species)) +
+  geom_point() +
+  theme_bw() +
+  scale_fill_viridis_d() +
+  labs(title = "Palmer Penguins, Culmen Depth(mm) vs Body Mass(g)",
+       subtitle = "3 penguin species observed on three islands in the Palmer Archipelago, Antarctica",)
 ```
 
 -   Part 3
@@ -273,7 +285,15 @@ Cool! Let's add species to this plot. What about island?
         -   Run `ggplotly(plot_name)` and explore! Edit `plot_name` accordingly
 
 ```{r, message=FALSE}
-
+ penguins_hist<-ggplot(data = penguins_data, aes(x = culmen_depth_mm, fill = species)) +
+  geom_histogram() +
+  theme_bw() + 
+  scale_fill_viridis_d() + # try adding option = "A", "C", "E", etc. These also have names! See documentation.
+  labs(title = "Palmer Penguins, Distribution of Culmen Depth",
+       subtitle = "3 penguin species observed on three islands in the Palmer Archipelago, Antarctica",
+       x = "Culmen Depth (mm)",
+       y = "Number of Penguins")
+ ggplotly(penguins_hist)
 ```
 
 ## Push to GitHub!
