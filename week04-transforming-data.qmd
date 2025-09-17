@@ -129,6 +129,8 @@ How about if we wanted to make a bar graph of the *average body mass by species*
 
     ```{r}
     penguin_average_mass<-ggplot(data = average_mass, aes(x = species, y = average_body_mass )) +
+      #theme_bw()+
+      #scale_color_viridis_b()
       geom_bar(stat="identity")
     ggplotly(penguin_average_mass)# fill in the blanks
     # tells ggplot to use the actual y-values from your data, instead of counting the number of rows like a typical bar plot does
@@ -144,14 +146,22 @@ In the code chunk below, create a new dataframe called `average_flipper_length` 
 Bonus: If you assign this to a new object name, you can then use `view(object_name)` to see your results as a table.
 
 ```{r, message=FALSE}
-
+average_flipper_length <- penguins_data %>% 
+  group_by(species) %>% 
+  summarise(average_flipper_length = mean(flipper_length_mm, na.rm = TRUE))
 
 ```
 
 In the code chunk below, plot `average_flipper_length` using `ggplot()` and `geom_bar`. Customize the graph with colors, a theme, and labels, etc., as you wish.
 
 ```{r, message=FALSE}
-
+penguin_average_flipper<-ggplot(data = average_flipper_length, aes(x = species, y = average_flipper_length, fill = species )) +
+  theme_bw()+
+  coord_flip()+
+  theme(legend.position = "none")+
+  labs(title = "AVerage Flipper Length by Species", x="", y="Length in mm")+
+  geom_bar(stat="identity")
+ggplotly(penguin_average_flipper)
 
 ```
 
@@ -162,7 +172,11 @@ Create a boxplot of body mass by species & make the plot interactive
 -   Hints: `geom_boxplot()`, `ggplotly()`
 
 ```{r, message=FALSE}
-
+penguins_boxplot<-ggplot(data = penguins_data, aes(x = species, y = body_mass_g, fill= species)) +
+  #theme_bw()+
+  #scale_color_viridis_b()
+  geom_boxplot()
+ggplotly(penguins_boxplot)
 
 ```
 
@@ -174,7 +188,10 @@ How many penguins live on each Island?
 
 ```{r, message=FALSE}
 
-
+summary(as.factor(penguins_data$island))
+table(penguins_data$island)
+penguins_data%>%
+  count(island)
 ```
 
 ## Exercise 4
@@ -182,6 +199,15 @@ How many penguins live on each Island?
 Create a dataframe that has the average culmen depth for each species. Then, make a bar plot of the new dataframe with species on the x-axis and average culmen depth on the y-axis
 
 ```{r, message=FALSE}
+average_culmen_depth <- penguins_data %>% 
+  group_by(species) %>% 
+  summarise(average_culmen_depth = mean(culmen_depth_mm, na.rm = TRUE))
+
+penguin_average_culmen<-ggplot(data = average_culmen_depth, aes(x = species, y = average_culmen_depth, fill = species )) +
+  #theme_bw()+
+  #scale_color_viridis_b()
+  geom_bar(stat="identity")
+ggplotly(penguin_average_culmen)
 
 
 ```
