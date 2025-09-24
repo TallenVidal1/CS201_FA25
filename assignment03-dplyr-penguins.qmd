@@ -81,8 +81,9 @@ Starting with `penguins`, move the `individual_id` variable to the third column 
 Don't forget to assign to a new object name!
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+penguins_reloc<-penguins %>%
+  relocate(individual_id, .after = sample_number)
+view(penguins_reloc)
 ```
 
 ## 6. `rename()`
@@ -92,8 +93,9 @@ Starting with `penguins`, convert the `island` column to `island_name`. Use `vie
 Don't forget to assign to a new object name.
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+penguins_rename<-penguins %>%
+  rename(island_name = island)
+view(penguins_rename)
 ```
 
 ## 7. `mutate()`
@@ -101,8 +103,9 @@ Don't forget to assign to a new object name.
 Copy `penguins` to a new object called `mutate` and add a column that displays flipper length as kilometers. Call that new column `flippometers`.
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+penguins_mutate <- penguins %>%
+  mutate(flippometers = flipper_length_mm/1000000)
+view(penguins_mutate)
 ```
 
 ## 8. `group_by() %>% summarize()`
@@ -114,8 +117,11 @@ Create a new dataframe called `number8`. Take `penguins`, group the data by isla
 Apply `na.rm` as needed.
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+number8 <- penguins %>%
+  group_by(island, species) %>%
+  summarize(culmen_depth_mean = mean(culmen_depth_mm, na.rm = TRUE),
+            culmen_length_mean = mean(culmen_length_mm, na.rm = TRUE))
+view(number8)
 ```
 
 ## 9. `across()`
@@ -124,7 +130,13 @@ Starting with `penguins`, only keep observations for Biscoe island, group by `sp
 
 ```{r, message=FALSE, warning=FALSE}
 
-
+# Filter for Biscoe island, group by species, then get max of all numeric variables
+penguins_across<-penguins %>%
+  filter(island == "Biscoe") %>%
+  group_by(species) %>%
+  summarise(across(where(is.numeric), max, na.rm = TRUE))
+ # got some help from ChatGPT
+view(penguins_across)
 ```
 
 ## 10. `count()`
@@ -132,6 +144,12 @@ Starting with `penguins`, only keep observations for Biscoe island, group by `sp
 Starting with `penguins`, create a new object called `count` that filters out all `sex` values other than `MALE` and `FEMALE`. Then, in the same piped function, display the count of all penguins by `island`, `species`, and `sex`.
 
 ```{r, message=FALSE, warning=FALSE}
+
+count <- penguins %>%
+  filter(sex %in% c("MALE", "FEMALE")) %>%   # keep only MALE and FEMALE
+  count(island, species, sex)                # count by island, species, sex
+#ChatGPT Assisted
+view(count)
 
 
 ```
@@ -147,8 +165,11 @@ Create a new object called `case_when` from `penguins` and add a new column call
 Use `summary(as.factor(case_when$size))` to check your work
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+case_when <- penguins%>% 
+  mutate( size =case_when(
+    body_mass_g >= 4050 ~ "big",
+    body_mass_g <= 4050 ~ "small" ))
+view(case_when)
 ```
 
 ## 12. Final Boss 🐧 (up to 2.5 pts extra credit)
@@ -163,7 +184,7 @@ Create a new object called `final_boss` that satisfies all of the following:
 
 1.  Start with the `penguins` dataset.
 
-2.  Filter to keep only *female* penguins with a known `flipper_length_mm` (not `NA`) that are either on Dream or Biscoeisland.
+2.  Filter to keep only *female* penguins with a known `flipper_length_mm` (not `NA`) that are either on Dream or Biscoe island.
 
 3.  Select just these columns: `species`, `island`, `flipper_length_mm`, and `body_mass_g`.
 
@@ -187,11 +208,28 @@ Create a new object called `final_boss` that satisfies all of the following:
 
 -   Use comments (`#`) to help you think through each step.
 
--   Use `print(final_boss` when you're done.
+-   Use `print(final_boss)` when you're done.
 
 ```{r, message=FALSE, warning=FALSE}
-
-
+final_boss <- penguins %>%
+  filter(
+    sex == "FEMALE",!is.na(flipper_length_mm),island %in% c("Dream", "Biscoe")
+  ) %>%
+  select(species, island, flipper_length_mm, body_mass_g) %>%
+  mutate(
+    flipper_rank = case_when(
+      flipper_length_mm < 190 ~ "short",
+      flipper_length_mm >= 190 & flipper_length_mm <= 210 ~ "medium",
+      flipper_length_mm > 210 ~ "long"
+    )
+  ) %>%
+  group_by(species, island, flipper_rank) %>%
+  summarise(
+    avg_mass_g = round(mean(body_mass_g, na.rm = TRUE)),
+    .groups = "drop"
+  )
+# ChatGPT assisted...again
+print(final_boss)
 ```
 
 # Push to GitHub AND submit link on Canvas!!
