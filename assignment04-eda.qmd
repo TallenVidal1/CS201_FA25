@@ -1,0 +1,238 @@
+---
+title: "Assignment 4: Exploratory Data Analysis"
+author: "Amber Camp"
+date: "`r Sys.Date()`"
+format: html
+editor: visual
+---
+
+## Overview
+
+Due: **Sunday, 9/28 11:59pm**
+
+In this assignment, you will practice Exploratory Data Analysis (EDA) by making plots from a **Kaggle dataset of your choice**.
+
+You will submit **at least 4 different plot types**, with short written interpretations for each.
+
+Part 1 is worth a total of 1 point, and Part 2 is worth 4 points (1 point for each plot & interpretation).
+
+## Part 1: Get Your Data
+
+1.  Go to [Kaggle Datasets](https://www.kaggle.com/datasets), create an account, and choose a dataset that interests you. Ensure your data has:
+    1.  At least 4 variables
+    2.  At least one categorical and one continuous variable
+    3.  I recommend data that contains at least 50-100 observations
+    4.  Tip: Open the CSV on Kaggle first and skim the columns to check that it meets these requirements
+2.  Download the dataset as a CSV file.
+3.  Place the CSV in your class R project data folder.
+4.  Read it into R with `read_csv()`.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(here)
+library(janitor)
+gym_data <- read_csv("data/gym_members_exercise_tracking.csv")
+
+```
+
+### Describe your data
+
+Data author: Seyed Vala Khorasani
+
+Link: <https://www.kaggle.com/datasets/valakhorasani/gym-members-exercise-dataset>
+
+Description: This data set provides a detailed overview of gym members' exercise routines, physical attributes, and fitness metrics. It contains 973 samples of gym data, including key performance indicators such as heart rate. calories burned, and workout duration. Each entry also includes demographic data and experience levels allowing for comprehensive analysis of fitness patterns, athlete progression, and health trends.
+
+### Preview your data
+
+Use some of the strategies you've learned in this class or picked up elsewhere to summarize and quickly explore your data.
+
+```{r}
+head(gym_data)
+
+df <- gym_data %>%
+  clean_names()
+df
+```
+
+### Summary stats
+
+Before you make plots, you must also:
+
+-   Show basic summaries of your dataset, including:
+
+    -   `count()` for categorical variables (to see category frequencies)
+
+    -   `mean()`, `median()`, `sd()`, `min()`, `max()` for at least one numeric variable
+
+```{r}
+##Age count##
+age_count <- df%>%
+  count(age)
+print(age_count)
+##Gender##
+gender_count <- df%>%
+  count(gender)
+print(gender_count)
+##Exercise type##
+type_count <- df %>%
+  count(workout_type)
+print(type_count)
+## Experience count ##
+exp_count <-df %>%
+  count(experience_level)
+print(exp_count)
+
+##numeric data ##
+
+average_heights <- df %>%
+  group_by(gender) %>%
+  summarise(Average_Height_m = mean(height_m, na.rm = TRUE))
+
+print(average_heights)
+#translates to roughly 5'3 for women, and 5'8 for men#
+
+##Median##
+median_heights <- df %>%
+  group_by(gender) %>%
+  summarise(Median_Height_m = median(height_m, na.rm = TRUE))
+
+print(median_heights)
+## Standard Deviation ##
+sd_heights <- df %>%
+  group_by(gender) %>%
+  summarise(Sd_Height_m = sd(height_m, na.rm = TRUE))
+
+print(sd_heights)
+## Tells me how the standard deviation of the heights of men/women ##
+
+## Minimum and Max ##
+min_heights <- df %>%
+  group_by(gender) %>%
+  summarise(Minimum_Height_m = min(height_m, na.rm = TRUE))
+
+print(min_heights)
+
+max_heights <- df %>%
+  group_by(gender) %>%
+  summarise(Maximum_Height_m = max(height_m, na.rm = TRUE))
+
+print(max_heights)
+
+```
+
+Write 2–3 sentences here: What do the category counts tell you? What does the numeric summary show about spread, center, or outliers?
+
+The count of the categorical data tells me is that in this data set the highest count of a single age demographic is 43 year-olds with a count of 34. Also there more men who attend the gym than women according to this data set. The most popular form of workout is strength training, closely followed by cardio-focused training. The average height tells me that both the female and male heights contained in this data set are slightly below the United States average. Both genders are around 1 inch below the American average heights. The outliers for the height data is represented by the max and min, for males the min was 1.6 meters (5'3) and the max was 2.0 meters (6'5). For females the min was 1.5 meters (4'11) and the max was 1.8 meters (5'10).
+
+## Part 2:
+
+Create **at least 4 plots**, each of a different type. At least one of your four plots must use different variables than the others.
+
+Each plot should have:
+
+-   A title and labeled axes
+
+-   A short interpretation (2-3 sentences) underneath
+
+Use the EDA Part 3 notes as your reference. Since this is an EDA assignment, your plots can be plain, but consider adding colors, themes, or interactivity for interpretability and visual appeal if you know how.
+
+### Plot 1
+
+```{r}
+# insert code here
+ggplot(df, aes(x = weight_kg, y = age, fill = gender)) +
+  geom_point()+
+  labs(title = "Weight vs Age Scatterplot", 
+       x = "Weight in kg",
+       y = "Age")
+
+#view(df)
+
+ggplot(df, aes(x = age, y = fat_percentage)) +
+  geom_point()+ 
+  labs(title = "Age vs Fat Percentage Scatterplot", 
+       x = "Age",
+       y = "Percentage")
+
+ggplot(df, aes( x = age, y = calories_burned)) +
+  geom_point()+
+  labs(title = "Age vs Calories Burned Scatterplot", 
+       x = "Age",
+       y = "Calories Burned")
+
+ggplot(df, aes( x = weight_kg, y = calories_burned)) +
+  geom_point()+
+  labs(title = "Weight vs Calories Burned Scatterplot", 
+       x = "Weight in kg",
+       y = "Calories Burned")
+```
+
+Interpretation: Based on these scatter plots there is no correlation between age/calories burned, age/body fat percentage, age/weight. This could be an error on my part because while age can be used as a continuous data, it might not be as useful as I initially thought. Making a plot based on weight and calories burned created an interesting looking plot however the spread still did not display a significant relationship between the two variables of weight and calories burned.
+
+### Plot 2
+
+```{r}
+# insert code here
+male_df<-df%>%
+  dplyr::filter(gender == "Male")
+
+ggplot(male_df, aes(x = weight_kg)) +
+  geom_density() +
+  labs(title = "Weight (kg) Density Chart: Male", 
+       x = "Weight in kg",
+       y = "Density")
+
+female_df <- df %>%
+  dplyr::filter(gender == "Female")
+ggplot(female_df, aes( x = weight_kg))+
+  geom_density()+
+  labs(title = "Weight (kg) Density Chart: Female", 
+       x = "Weight in kg",
+       y = "Density")
+```
+
+Interpretation: These density chart or the male population of this data has an almost bell-curve like shape to it which represents that the weight of the male population has a "normal" distribution. From the graph it looks like the male population has the highest density around the 85 kg marl. Meanwhile the female population has an abnormal distribution; in fact for the females the density chart shows a negatively skewed distribution of data. This means that the outliers in the female data are mostly on the lower end compared to the rest of the data.
+
+### Plot 3
+
+```{r}
+# insert code here
+ggplot(df, aes(x = workout_frequency_days_week)) +
+  geom_bar() +
+  labs(title = "Gym Frequency Bar Graph",
+       x = "Days per week at Gym",
+       y = "Count")
+ggplot(male_df, aes(x = workout_frequency_days_week)) +
+  geom_bar() +
+  labs(title = "Gym Frequency Bar Graph: Male",
+       x = "Days per week at Gym",
+       y = "Count")
+ggplot(female_df, aes(x = workout_frequency_days_week)) +
+  geom_bar() +
+  labs(title = "Gym Frequency Bar Graph: Female",
+       x = "Days per week at Gym",
+       y = "Count")
+```
+
+Interpretation: We can see throughout all the data, that the most frequent amount of times that people regularly go to the gym, according to this data set, is 3 times a week. The second highest frequency is 4 days a week, meaning it is accurate to sya that the majority of the population of this data set go to the gym roughly 3-4 times a week on average. There are little to no major changes between the male and female population; meaning the distribution of the frequency is the same for both genders.
+
+### Plot 4
+
+```{r}
+# insert code here
+ gym_hist<-ggplot(df, aes(x = age, fill = gender)) +
+  geom_histogram() +
+  theme_bw() + 
+  scale_fill_viridis_d() + # try adding option = "A", "C", "E", etc. These also have names! See documentation.
+  labs(title = "Distribution of Age",
+       x = "Age",
+       y = "Number of People")
+ ggplotly(gym_hist)
+```
+
+Interpretation: This data distribution shows us that there are (roughly) more females on the younger and older side of the age bracket that attend the gym compared to men, and men are more dominant in the "middle-age" bracket, located at the center of the graph. This graph was actually very educational for me because I would've predicted the males to be dominant in all age groups but this distribution has told me otherwise.
+
+## Push to GitHub to Submit!
+
+Assignment is due Sunday 9/28 at 11:59 pm.
