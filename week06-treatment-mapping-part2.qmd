@@ -150,9 +150,9 @@ completed_treatment_map_int <- ggplot(percent_completed_by_state_map) +
   geom_sf_interactive(
     mapping = aes(geometry = geometry,
       fill = percentage_completed,
-      tooltip = paste("State: ", state_abbr, 
-                      "State FIPS:", stfips, 
-                      "<br>Completed:", percentage_completed, "%")),
+      tooltip = paste("State:", state_abbv,
+                      "<br>FIPS:", stfips, 
+                      "<br>Completed:", round(percentage_completed,2), "%")),
     color = "#ffffff",
     size = 0.25) +
   labs(fill = "% of Completed Treatment Episodes") +
@@ -170,8 +170,18 @@ girafe(ggobj = completed_treatment_map_int) # check your spelling!
 Adding color bins, based on manual/equal interval breaks. (There are more advanced binning techniques, likes quantiles, Jenks natural breaks, standard deviations, etc.)
 
 ```{r}
-percent_completed_by_state_map <- percent_completed_by_state_map %>% 
-  mutate(percentage_bin = cut(percentage_completed, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80)))
+#percent_completed_by_state_map <- percent_completed_by_state_map %>% 
+#  mutate(percentage_bin = cut(percentage_completed, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80),
+                        #      percentage_bin = fct_explicit_na(percentage_bin, na_level = "No Data")))
+
+
+## Ways to fill in West Virginia using binning ##
+
+## percent_completed_by_state_map <- percent_completed_by_state_map %>% 
+ # mutate(percentage_bin = cut(percentage_completed, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80), right = FALSE))
+
+ percent_completed_by_state_map <- percent_completed_by_state_map %>% 
+  mutate(percentage_bin = cut(percentage_completed, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80), include.lowest = TRUE))
 
 # check out the column you just added
 head(percent_completed_by_state_map)
@@ -202,12 +212,18 @@ percent_complete_binned_int <- ggplot(percent_completed_by_state_map) +
     legend.title = element_text(size = 5),
     strip.text = element_text(size = 4))
 
+## Fixing West Virginia inseert (na.value = "pink") after "direction = -1"##
+
 girafe(ggobj = percent_complete_binned_int)
 ```
 
 ## For Friday's Class
 
 Notice anything weird with the above?? Try to figure out how to fix the problem—you'll need it for your homework. I'll show you a solution on Friday.
+
+```{r}
+
+```
 
 ------------------------------------------------------------------------
 
