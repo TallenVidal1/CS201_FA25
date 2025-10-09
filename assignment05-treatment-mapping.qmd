@@ -71,14 +71,15 @@ percent_no_use_state_map <- full_join(percent_no_use,
  percent_no_use_state_map <- percent_no_use_state_map %>% 
   mutate(percentage_bin = cut(pct_no_use, breaks=c(0, 10, 20, 30, 40, 50, 60, 70, 80), include.lowest = TRUE))
  
- percent_complete_binned_int <- ggplot(percent_completed_by_state_map) +
+ percent_complete_binned_int <- ggplot(percent_no_use_state_map) +
   geom_sf_interactive(
     aes(geometry = geometry,
       fill = percentage_bin,
-      tooltip = paste("State FIPS:", stfips,
+      tooltip = paste( "State:", state_abbv,
+                      "State FIPS:", stfips,
                       "<br>Completed:", pct_no_use, "%")),
     color = "#ffffff", size = 0.25) +
-  labs(fill = "% of Completed Treatment Episodes",
+  labs(fill = "% of Completed Treatments with no use at discharge",
        title = "Completed Treatment Episodes by State",
        subtitle = "TEDS-D Dataset (SAMHSA)") +
   scale_fill_viridis_d(option = "mako", direction = -1) + # i flipped the direction of the color scale so dark = high and light = low
@@ -110,10 +111,72 @@ Treatment outcomes can vary depending on the type of service patients receive an
 -   After making your visualizations, write a short summary (3-ish sentences) that explains the main patterns you observe. Please use full, grammatical sentences.
 
 ```{r}
+##treatments completed ##
+group_service <- teds_d %>%
+  mutate(
+    completed = ifelse(reason == "Treatment completed", 1, 0),
+    no_use = ifelse(reason == "no use", 1, 0)
+  ) %>%
+  group_by(services_d) %>%
+  summarise(
+    total_cases = n(),percent_completed = mean(completed, na.rm = TRUE) * 100, percent_no_use = mean(no_use, na.rm = TRUE) * 100
+  ) %>%
+  arrange(services_d)
 
+group_service
+
+##treatments no use at discharge ##
+group_los <- teds_d %>%
+  mutate(
+    completed = ifelse(reason == "Treatment completed", 1, 0),
+    no_use = ifelse(reason == "no use", 1, 0)
+  ) %>%
+  group_by(los) %>%
+  summarise(
+    total_cases = n(),
+    percent_completed = mean(completed, na.rm = TRUE) * 100,
+    percent_no_use = mean(no_use, na.rm = TRUE) * 100
+  ) %>%
+  arrange(los)
+
+group_los
 ```
 
-Summary: (write here)
+```{r}
+## type of services visulaization
+service_bar<-ggplot(teds_d, aes(x = reason, fill = services_d)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Outcome by Service",
+    x = "Outcome",
+    y = "Number of Cases",
+    fill = "Service Type"
+  ) +
+  theme(plot.title = element_text(size = 5)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 5, angle = 90)) 
+#girafe(ggobj = service_bar)
+## length of stay visualization ##
+los_box<-ggplot(teds_d, aes(x = reason, y = los)) +
+  geom_boxplot(fill = "blue") +
+  labs(
+    title = "Length of Stay by Treatment Outcome", x = "Outcome", y = "Length of Stay (days)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+#girafe(ggobj = los_box)
+##distribution of length of stay ##
+los_hist<-ggplot(teds_d, aes(x = los)) +
+  geom_histogram(binwidth = 1, fill = "green", color = "black") +
+  labs(
+    title = "Length of Stay Distribution", x = "Length of Stay (days)", y = "Number of Cases"
+  ) +
+  theme_minimal()
+#girafe(ggobj = los_hist)
+ggplotly(service_bar)
+```
+
+Summary: The most successful patients who completed their treatment with no use at discharge seem to be those under the "Ambulatory, non-intesive outpatient" category. On the other hand, the type of service with the least amount of completed treatment services with no use at discharge was the ambulatory detox category. This conclusion is logical because according to the code book this category is for patients who were being tended to in a hospital setting "24 hours a day" which had a similar level of restriction to the rehab (non-detox) category which is the second lowest category in producing patients who complete treatment with no use at discharge. One theory I propse for the reasoning of this, is because these categories require the most surveillance of patients which is the most intense level of freedom restriction compared to the other service types. This drastic change in freedom would understandably make most patients feel pressured and unable to want to continue treatment. Those who completed their treatments were in the treatment centers for around 30 days on average (box plot) which also is supported by the histogram which tells us that most cases lead to a length of days of at least 30 days.
 
 ## Push to GitHub to Submit!
 
