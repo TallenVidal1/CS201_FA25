@@ -270,13 +270,19 @@ ggplot(diamonds, aes(x = cut, y = carat)) + # this is a violin plot
 
 -   Where do we see a lot of variability?
 
+    We see a lot of variability between carats and cut type, there may be a slight negative correlation. Overall there is no co-variation between the two variables of cut type and carats.
+
 -   Is there a relationship between carat and cut?
+
+    There may be a slight negative correlation but besides that, there seems to be little to no co-variation.
 
 -   Which category has the largest carat diamonds?
 
+    The fair cut category has the largest carat diamonds.
+
 #### Conclusions:
 
-The factor with the most influence on price is \_\_\_\_. There may be a trade-off between `carat` and `cut`. Perhaps larger carat diamonds can be profitably sold even with a low quality cut, for example.
+The factor with the most influence on price is carat. There may be a trade-off between `carat` and `cut`. Perhaps larger carat diamonds can be profitably sold even with a low quality cut, for example.
 
 We will stop here!
 

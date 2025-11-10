@@ -144,7 +144,7 @@ group_los
 
 ```{r}
 ## type of services visulaization
-service_bar<-ggplot(teds_d, aes(x = reason, fill = services_d)) +
+ggplot(teds_d, aes(x = reason, fill = services_d)) +
   geom_bar() +
   labs(
     title = "Distribution of Outcome by Service",
@@ -157,7 +157,7 @@ service_bar<-ggplot(teds_d, aes(x = reason, fill = services_d)) +
   theme(axis.text.x = element_text(size = 5, angle = 90)) 
 #girafe(ggobj = service_bar)
 ## length of stay visualization ##
-los_box<-ggplot(teds_d, aes(x = reason, y = los)) +
+ggplot(teds_d, aes(x = reason, y = los)) +
   geom_boxplot(fill = "blue") +
   labs(
     title = "Length of Stay by Treatment Outcome", x = "Outcome", y = "Length of Stay (days)"
@@ -166,14 +166,13 @@ los_box<-ggplot(teds_d, aes(x = reason, y = los)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 #girafe(ggobj = los_box)
 ##distribution of length of stay ##
-los_hist<-ggplot(teds_d, aes(x = los)) +
+ggplot(teds_d, aes(x = los)) +
   geom_histogram(binwidth = 1, fill = "green", color = "black") +
   labs(
     title = "Length of Stay Distribution", x = "Length of Stay (days)", y = "Number of Cases"
   ) +
   theme_minimal()
 #girafe(ggobj = los_hist)
-ggplotly(service_bar)
 ```
 
 Summary: The most successful patients who completed their treatment with no use at discharge seem to be those under the "Ambulatory, non-intesive outpatient" category. On the other hand, the type of service with the least amount of completed treatment services with no use at discharge was the ambulatory detox category. This conclusion is logical because according to the code book this category is for patients who were being tended to in a hospital setting "24 hours a day" which had a similar level of restriction to the rehab (non-detox) category which is the second lowest category in producing patients who complete treatment with no use at discharge. One theory I propse for the reasoning of this, is because these categories require the most surveillance of patients which is the most intense level of freedom restriction compared to the other service types. This drastic change in freedom would understandably make most patients feel pressured and unable to want to continue treatment. Those who completed their treatments were in the treatment centers for around 30 days on average (box plot) which also is supported by the histogram which tells us that most cases lead to a length of days of at least 30 days.
