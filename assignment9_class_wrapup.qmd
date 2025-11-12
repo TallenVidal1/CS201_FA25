@@ -105,12 +105,28 @@ ggplot(data = penguins, aes(x = species, y = flipper_length_mm, fill = species))
   labs(title = "Palmer Penguins, Distribution of Flipper Length",
        subtitle = "3 penguin species observed on three islands in the Palmer Archipelago, Antarctica",
        x = "",
-       y = "flipper length (mm)") + 
+       y = "Flipper length (mm)") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1), legend.position = "none") +
   coord_flip()
 
 ```
 
 ```{r}
+# Install the needed packages (if not already installed)
+
+# Load the libraries
+library(ggplot2)
+library(palmerpenguins)
+
+# Basic violin plot: body mass by species
+ggplot(data = penguins, aes(x = species, y = body_mass_g, fill = species)) +
+  geom_violin(trim = FALSE) +
+  labs(
+    title = "Distribution of Penguin Body Mass by Species",
+    x = "Penguin Species",
+    y = "Body Mass (g)"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Pastel1")
 
 ```
